@@ -1,0 +1,16 @@
+C:\Users\USER\source\repos\Let's talk\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.exe
+C:\Users\USER\source\repos\Let's talk\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.deps.json
+C:\Users\USER\source\repos\Let's talk\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.runtimeconfig.json
+C:\Users\USER\source\repos\Let's talk\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.runtimeconfig.dev.json
+C:\Users\USER\source\repos\Let's talk\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.dll
+C:\Users\USER\source\repos\Let's talk\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.pdb
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.csprojAssemblyReference.cache
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.AssemblyInfoInputs.cache
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.AssemblyInfo.cs
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.csproj.CoreCompileInputs.cache
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.dll
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.pdb
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.genruntimeconfig.cache
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let_s_talk.Form1.resources
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.csproj.GenerateResource.cache
+C:\Users\USER\source\repos\Let's talk\Let's talk\obj\Debug\netcoreapp3.1\Let_s_talk.Properties.Resources.resources

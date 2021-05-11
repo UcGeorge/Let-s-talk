@@ -1,0 +1,26 @@
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.exe
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.deps.json
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.runtimeconfig.json
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.runtimeconfig.dev.json
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Let's talk.pdb
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Microsoft.CodeAnalysis.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\Microsoft.VisualBasic.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\debian-x64\native\libuv.so
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\fedora-x64\native\libuv.so
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\opensuse-x64\native\libuv.so
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\osx\native\libuv.dylib
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\rhel-x64\native\libuv.so
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\win7-arm\native\libuv.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\win7-x64\native\libuv.dll
+C:\Users\USER\source\repos\Let's talk\bin\Debug\netcoreapp3.1\runtimes\win7-x86\native\libuv.dll
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.csprojAssemblyReference.cache
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.AssemblyInfoInputs.cache
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.AssemblyInfo.cs
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.csproj.CoreCompileInputs.cache
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.csproj.CopyComplete
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.dll
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.pdb
+C:\Users\USER\source\repos\Let's talk\obj\Debug\netcoreapp3.1\Let's talk.genruntimeconfig.cache
