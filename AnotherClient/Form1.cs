@@ -138,9 +138,8 @@ namespace AnotherClient
 
         private void HandleConnection()
         {
-            (bool, string) response = client.sendMessage(clientName, "Admin");
-            currentChatID = response.Item2.Split('~')[0];
-            receiveBubble(response.Item2.Split('~')[1]);
+            client.sendMessage(clientName, "Admin");
+            currentChatID = "Admin";
             label4.Visible = false;
             chatIdLabel.Text = currentChatID;
             chatIdLabel.Visible = true;
@@ -155,7 +154,7 @@ namespace AnotherClient
         {
             foreach (Panel chat in chats)
             {
-                if(chat == null)
+                if (chat == null)
                 {
                     continue;
                 }
@@ -177,7 +176,7 @@ namespace AnotherClient
             bubble.Location = new Point(7, 222);
             bubble.Name = "panel " + text;
             bubble.Size = new Size(chatText.Size.Width + 13, 36);
-            if(chats.Length == 5)
+            if (chats.Length == 5)
             {
                 chatView.Controls.Remove(chats[0]);
                 oldestChat++;
@@ -190,9 +189,12 @@ namespace AnotherClient
             while (true)
             {
                 (string, string) message = client.receiveMessage();
-                if(currentChatID == message.Item1)
+                if (currentChatID == message.Item1)
                 {
-                    receiveBubble(message.Item2);
+                    Invoke(new Action(() =>
+                    {
+                        receiveBubble(message.Item2);
+                    }));
                 }
             }
         }
@@ -239,7 +241,7 @@ namespace AnotherClient
                 severMsgBox.Focus();
                 return;
             }
-            if (client.sendMessage(chatTextBox.Text, currentChatID).Item1)
+            if (client.sendMessage(chatTextBox.Text, currentChatID))
             {
                 sendeBubble(chatTextBox.Text);
             }

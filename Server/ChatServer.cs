@@ -96,6 +96,7 @@ namespace Server
                 clName = streamReader.ReadLine().Split("~")[1];
                 string message = "Admin~Welcome, " + clName + "!";
                 Console.WriteLine(clName + " just joined.");
+                clientsList.Add(clName, clientSocket);
                 streamWriter.WriteLine(message);
                 streamWriter.Flush();
 
@@ -105,8 +106,6 @@ namespace Server
                     while ((true))
                     {
                         incomingMessage = streamReader.ReadLine();
-                        streamWriter.WriteLine("Received");
-                        streamWriter.Flush();
                         Console.WriteLine("From client - " + clName + " : " + incomingMessage);
 
                         ChatServer.broadcast(incomingMessage, clName);

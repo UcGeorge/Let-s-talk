@@ -30,24 +30,22 @@ namespace AnotherClient
             return (sender, message);
         }
 
-        public (bool, string) sendMessage(string message, string receiver)
+        public bool sendMessage(string message, string receiver)
         {
-            //if (myclient.Connected)
+            if (myclient.Connected)
             {
-                string response;
                 NetworkStream networkStream = myclient.GetStream();
                 StreamWriter streamWriter = new StreamWriter(networkStream);
                 StreamReader streamReader = new StreamReader(networkStream);
                 message = receiver + "~" + message;
                 streamWriter.WriteLine(message);
                 streamWriter.Flush();
-                response = streamReader.ReadLine();
-                return (true, response);
+                return true;
             }
-            //else
-            //{
-            //    return (false, "");
-            //}
+            else
+            {
+                return false;
+            }
         }
     }
 }
