@@ -93,11 +93,11 @@ namespace Server
             using (StreamWriter streamWriter = new StreamWriter(networkStream))
             using (StreamReader streamReader = new StreamReader(networkStream))
             {
-                /*string clientName = streamReader.ReadLine().Split("~")[1];
+                string clientName = streamReader.ReadLine().Split("~")[1];
                 string message = "Admin~Welcome, " + clientName + "!";
                 Console.WriteLine(clientName + " just joined.");
                 streamWriter.WriteLine(message);
-                streamWriter.Flush();*/
+                streamWriter.Flush();
 
                 string incomingMessage = "";
                 try
