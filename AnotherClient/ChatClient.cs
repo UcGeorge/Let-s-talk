@@ -26,6 +26,7 @@ namespace AnotherClient
             incomingMessage = streamReader.ReadLine();
             sender = incomingMessage.Split('~')[0];
             message = incomingMessage.Split('~')[1];
+            Console.WriteLine("Message from " + sender + " : " + message);
 
             return (sender, message);
         }

@@ -44,33 +44,6 @@ namespace Server
                 }
             }
         }
-
-        public static void broadcast(string msg, string uName)
-        {
-            foreach (DictionaryEntry Item in clientsList)
-            {
-                NetworkStream networkStream = ((TcpClient)Item.Value).GetStream();
-                StreamWriter streamWriter = new StreamWriter(networkStream);
-                StreamReader streamReader = new StreamReader(networkStream);
-                string message = uName + "~" + msg;
-                streamWriter.WriteLine(message);
-                streamWriter.Flush();
-                string response = streamReader.ReadLine();
-            }
-        }  //end broadcast function
-
-        public static void sendTo(TcpClient receiver, string msg, string uName)
-        {
-            NetworkStream networkStream = receiver.GetStream();
-            StreamWriter streamWriter = new StreamWriter(networkStream);
-            StreamReader streamReader = new StreamReader(networkStream);
-            {
-                string message = uName + "~" + msg;
-                streamWriter.WriteLine(message);
-                streamWriter.Flush();
-                string response = streamReader.ReadLine();
-            }
-        }
     }
 
     public class handleClinet
@@ -97,6 +70,7 @@ namespace Server
                 string message = "Admin~Welcome, " + clName + "!";
                 Console.WriteLine(clName + " just joined.");
                 clientsList.Add(clName, clientSocket);
+                broadcast(clName + " just joined.", "Admin");
                 streamWriter.WriteLine(message);
                 streamWriter.Flush();
 
@@ -107,8 +81,14 @@ namespace Server
                     {
                         incomingMessage = streamReader.ReadLine();
                         Console.WriteLine("From client - " + clName + " : " + incomingMessage);
-
-                        ChatServer.broadcast(incomingMessage, clName);
+                        if (incomingMessage.Split("~")[0] == "Admin")
+                        {
+                            broadcast(incomingMessage.Split("~")[1], clName);
+                        }
+                        else
+                        {
+                            sendTo((TcpClient)clientsList[incomingMessage.Split("~")[0]], incomingMessage.Split("~")[1]);
+                        }
                     }//end while
                 }
                 catch (Exception ex)
@@ -118,37 +98,29 @@ namespace Server
             }
         }
 
-        /*private void doChat(TcpClient clientSocket)
+        public void broadcast(string msg, string uName)
         {
-            if (clientSocket.Connected)
+            foreach (DictionaryEntry Item in clientsList)
             {
-                string incomingMessage = "";
-                using (NetworkStream networkStream = clientSocket.GetStream())
-                using (StreamWriter streamWriter = new StreamWriter(networkStream))
-                using (StreamReader streamReader = new StreamReader(networkStream))
-                {
-                    try
-                    {
-                        while ((true))
-                        {
-                            incomingMessage = streamReader.ReadLine();
-                            streamWriter.WriteLine("Received");
-                            streamWriter.Flush();
-                            Console.WriteLine("From client - " + clName + " : " + incomingMessage);
+                NetworkStream networkStream = ((TcpClient)Item.Value).GetStream();
+                StreamWriter streamWriter = new StreamWriter(networkStream);
+                StreamReader streamReader = new StreamReader(networkStream);
+                string message = uName + "~" + msg;
+                streamWriter.WriteLine(message);
+                streamWriter.Flush();
+            }
+        }  //end broadcast function
 
-                            ChatServer.broadcast(incomingMessage, clName);
-                        }//end while
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                    }
-                }
-            }
-            else
+        public void sendTo(TcpClient receiver, string msg)
+        {
+            NetworkStream networkStream = receiver.GetStream();
+            StreamWriter streamWriter = new StreamWriter(networkStream);
+            StreamReader streamReader = new StreamReader(networkStream);
             {
-                Console.WriteLine("Not connected!");
+                string message = clName + "~" + msg;
+                streamWriter.WriteLine(message);
+                streamWriter.Flush();
             }
-        }//end doChat*/
+        }
     } //end class handleClinet
 }
