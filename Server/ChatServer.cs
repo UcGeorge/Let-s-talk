@@ -37,7 +37,6 @@ namespace Server
                     clientSocket = tcpListener.AcceptTcpClient();
                     Console.WriteLine("Someone is trying to connect...");
                     handleClinet handleClinet = new handleClinet(clientSocket, clientsList);
-                    /*Thread clientThread = new Thread(handleClinet.startClient);*/
                 }
                 catch (Exception e)
                 {
@@ -50,23 +49,21 @@ namespace Server
         {
             foreach (DictionaryEntry Item in clientsList)
             {
-                using (NetworkStream networkStream = ((TcpClient)Item.Value).GetStream())
-                using (StreamWriter streamWriter = new StreamWriter(networkStream))
-                using (StreamReader streamReader = new StreamReader(networkStream))
-                {
-                    string message = uName + "~" + msg;
-                    streamWriter.WriteLine(message);
-                    streamWriter.Flush();
-                    string response = streamReader.ReadLine();
-                }
+                NetworkStream networkStream = ((TcpClient)Item.Value).GetStream();
+                StreamWriter streamWriter = new StreamWriter(networkStream);
+                StreamReader streamReader = new StreamReader(networkStream);
+                string message = uName + "~" + msg;
+                streamWriter.WriteLine(message);
+                streamWriter.Flush();
+                string response = streamReader.ReadLine();
             }
         }  //end broadcast function
 
         public static void sendTo(TcpClient receiver, string msg, string uName)
         {
-            using (NetworkStream networkStream = receiver.GetStream())
-            using (StreamWriter streamWriter = new StreamWriter(networkStream))
-            using (StreamReader streamReader = new StreamReader(networkStream))
+            NetworkStream networkStream = receiver.GetStream();
+            StreamWriter streamWriter = new StreamWriter(networkStream);
+            StreamReader streamReader = new StreamReader(networkStream);
             {
                 string message = uName + "~" + msg;
                 streamWriter.WriteLine(message);
@@ -80,22 +77,25 @@ namespace Server
     {
         string clName;
         Hashtable clientsList;
+        TcpClient clientSocket;
 
         public handleClinet(TcpClient clientSocket, Hashtable cList)
         {
             this.clientsList = cList;
-            startClient(clientSocket);
+            this.clientSocket = clientSocket;
+            Thread clientThread = new Thread(startClient);
+            clientThread.Start();
         }
 
-        public void startClient(TcpClient clientSocket)
+        public void startClient()
         {
             using (NetworkStream networkStream = clientSocket.GetStream())
             using (StreamWriter streamWriter = new StreamWriter(networkStream))
             using (StreamReader streamReader = new StreamReader(networkStream))
             {
-                string clientName = streamReader.ReadLine().Split("~")[1];
-                string message = "Admin~Welcome, " + clientName + "!";
-                Console.WriteLine(clientName + " just joined.");
+                clName = streamReader.ReadLine().Split("~")[1];
+                string message = "Admin~Welcome, " + clName + "!";
+                Console.WriteLine(clName + " just joined.");
                 streamWriter.WriteLine(message);
                 streamWriter.Flush();
 

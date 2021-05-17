@@ -20,39 +20,34 @@ namespace AnotherClient
         {
             string sender;
             string message;
-
-            using (NetworkStream networkStream = myclient.GetStream())
-            using (StreamWriter streamWriter = new StreamWriter(networkStream))
-            using (StreamReader streamReader = new StreamReader(networkStream))
-            {
-                incomingMessage = streamReader.ReadLine();
-                sender = incomingMessage.Split('~')[0];
-                message = incomingMessage.Split('~')[1];
-            }
+            NetworkStream networkStream = myclient.GetStream();
+            StreamWriter streamWriter = new StreamWriter(networkStream);
+            StreamReader streamReader = new StreamReader(networkStream);
+            incomingMessage = streamReader.ReadLine();
+            sender = incomingMessage.Split('~')[0];
+            message = incomingMessage.Split('~')[1];
 
             return (sender, message);
         }
 
         public (bool, string) sendMessage(string message, string receiver)
         {
-            if (myclient.Connected)
+            //if (myclient.Connected)
             {
                 string response;
-                using (NetworkStream networkStream = myclient.GetStream())
-                using (StreamWriter streamWriter = new StreamWriter(networkStream))
-                using (StreamReader streamReader = new StreamReader(networkStream))
-                {
-                    message = receiver + "~" + message;
-                    streamWriter.WriteLine(message);
-                    streamWriter.Flush();
-                    response = streamReader.ReadLine();
-                }
+                NetworkStream networkStream = myclient.GetStream();
+                StreamWriter streamWriter = new StreamWriter(networkStream);
+                StreamReader streamReader = new StreamReader(networkStream);
+                message = receiver + "~" + message;
+                streamWriter.WriteLine(message);
+                streamWriter.Flush();
+                response = streamReader.ReadLine();
                 return (true, response);
             }
-            else
-            {
-                return (false, "");
-            }
+            //else
+            //{
+            //    return (false, "");
+            //}
         }
     }
 }

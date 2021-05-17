@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,8 +21,9 @@ namespace AnotherClient
         private Button prevButton;
         private string currentChatID;
         private ChatClient client;
-        private int prev_y = 264;
         private string clientName;
+        private Panel[] chats = new Panel[5];
+        int oldestChat = 0;
 
         public Form1(string clientName)
         {
@@ -51,7 +53,7 @@ namespace AnotherClient
             connectButton.Enabled = true;
             portBox.Text = port_Number.ToString();
             portBox.Enabled = false;
-            hostBox.Text = "0.0.0.0";
+            hostBox.Text = "localhost";
             hostBox.Focus();
             severMsgBox.Text = "Enter host address";
             ShowContacts();
@@ -139,41 +141,60 @@ namespace AnotherClient
             (bool, string) response = client.sendMessage(clientName, "Admin");
             currentChatID = response.Item2.Split('~')[0];
             receiveBubble(response.Item2.Split('~')[1]);
-            sendeBubble("My name is " + clientName);
-            response = client.sendMessage("Thank you...", "Admin");
-            sendeBubble("Thank you...");
-            /*currentChatID = response.Item2.Split('~')[0];
-            receiveBubble(response.Item2.Split('~')[1]);
-            sendeBubble("My name is " + clientName);*/
-
             label4.Visible = false;
             chatIdLabel.Text = currentChatID;
             chatIdLabel.Visible = true;
             chatTextBox.Visible = true;
             chatSendButton.Visible = true;
             chatTextBox.Focus();
+            Thread listener = new Thread(listenForMessages);
+            listener.Start();
         }
 
         private void receiveBubble(string text)
         {
+            foreach (Panel chat in chats)
+            {
+                if(chat == null)
+                {
+                    continue;
+                }
+                chat.Location = new Point(chat.Location.X, chat.Location.Y - 42); ;
+            }
             Panel bubble = new Panel();
             chatView.Controls.Add(bubble);
             Label chatText = new Label();
             bubble.Controls.Add(chatText);
 
             chatText.AutoSize = true;
-            chatText.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chatText.ForeColor = System.Drawing.SystemColors.HighlightText;
-            chatText.Location = new System.Drawing.Point(7, 7);
+            chatText.Font = new Font("Tahoma", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            chatText.ForeColor = SystemColors.HighlightText;
+            chatText.Location = new Point(7, 7);
             chatText.Name = "chatText";
             chatText.Text = text;
 
-            bubble.BackColor = System.Drawing.Color.Teal;
-            bubble.Location = new System.Drawing.Point(7, prev_y - 42);
-            bubble.Name = "panel" + (prev_y - 42).ToString();
-            bubble.Size = new System.Drawing.Size(chatText.Size.Width + 13, 36);
-            prev_y -= 42;
+            bubble.BackColor = Color.Teal;
+            bubble.Location = new Point(7, 222);
+            bubble.Name = "panel " + text;
+            bubble.Size = new Size(chatText.Size.Width + 13, 36);
+            if(chats.Length == 5)
+            {
+                chatView.Controls.Remove(chats[0]);
+                oldestChat++;
+            }
+            chats.Append(bubble);
+        }
 
+        private void listenForMessages()
+        {
+            while (true)
+            {
+                (string, string) message = client.receiveMessage();
+                if(currentChatID == message.Item1)
+                {
+                    receiveBubble(message.Item2);
+                }
+            }
         }
 
         private void sendeBubble(string text)
@@ -190,11 +211,24 @@ namespace AnotherClient
             chatText.Name = "chatText";
             chatText.Text = text;
 
+            foreach (Panel chat in chats)
+            {
+                if (chat == null)
+                {
+                    continue;
+                }
+                chat.Location = new System.Drawing.Point(chat.Location.X, chat.Location.Y - 42);
+            }
             bubble.BackColor = System.Drawing.Color.LightCyan;
-            bubble.Location = new System.Drawing.Point(chatView.Size.Width - chatText.Size.Width - 13 - 7, prev_y - 42);
-            bubble.Name = "panel" + (prev_y - 42).ToString();
+            bubble.Location = new System.Drawing.Point(chatView.Size.Width - chatText.Size.Width - 13 - 7, 222);
+            bubble.Name = "panel " + text;
             bubble.Size = new System.Drawing.Size(chatText.Size.Width + 13, 36);
-            prev_y -= 42;
+            if (chats.Length == 5)
+            {
+                chatView.Controls.Remove(chats[0]);
+                oldestChat++;
+            }
+            chats.Append(bubble);
         }
 
         private void chatSendButton_Click(object sender, EventArgs e)

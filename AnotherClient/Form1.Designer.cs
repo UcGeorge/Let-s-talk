@@ -29,6 +29,7 @@ namespace AnotherClient
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.hostBox = new System.Windows.Forms.TextBox();
             this.portBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -225,9 +226,11 @@ namespace AnotherClient
             this.Controls.Add(this.chatView);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(702, 429);
             this.MinimumSize = new System.Drawing.Size(702, 429);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connected to";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.chatView.ResumeLayout(false);
