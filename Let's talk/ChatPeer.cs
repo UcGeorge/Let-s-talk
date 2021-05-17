@@ -4,7 +4,11 @@ using System.Text;
 
 namespace Let_s_talk
 {
-    class ChatPeer
+    public class ChatPeer
     {
+        static void Main(String[] args)
+        {
+
+        }
     }
 }
