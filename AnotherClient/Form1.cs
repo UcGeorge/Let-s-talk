@@ -31,19 +31,27 @@ namespace AnotherClient
             InitializeComponent();
         }
 
-        void ShowContacts()
+        void ShowContacts(string contacts)
         {
+            contactsView.Controls.Clear();
             int x = 0;
-            int y = 104;
-            for (int i = 1; i <= 5; i++)
+            int y = 0;
+            foreach (string coontact in contacts.Split('+'))
             {
-                contact = new Button();
-                contact.Location = new System.Drawing.Point(x, y);
-                contact.Size = new System.Drawing.Size(178, 35);
-                contact.Text = "Contact " + i;
-                this.Controls.Add(this.contact);
-                contact.Click += new System.EventHandler(contactButtonHandler);
-                y += 33;
+                if(coontact == clientName)
+                {
+                    continue;
+                }
+                else
+                {
+                    contact = new Button();
+                    contact.Location = new System.Drawing.Point(x, y);
+                    contact.Size = new System.Drawing.Size(178, 35);
+                    contact.Text = coontact;
+                    contactsView.Controls.Add(this.contact);
+                    contact.Click += new System.EventHandler(contactButtonHandler);
+                    y += 33;
+                }
             }
         }
 
@@ -56,7 +64,6 @@ namespace AnotherClient
             hostBox.Text = "localhost";
             hostBox.Focus();
             severMsgBox.Text = "Enter host address";
-            ShowContacts();
         }
 
         private void connectButton_Click(object sender, EventArgs e)
@@ -189,12 +196,23 @@ namespace AnotherClient
             while (true)
             {
                 (string, string) message = client.receiveMessage();
-                if (currentChatID == message.Item1)
+                switch (message.Item1)
                 {
-                    Invoke(new Action(() =>
-                    {
-                        receiveBubble(message.Item2);
-                    }));
+                    case "Contacts":
+                        Invoke(new Action(() =>
+                        {
+                            ShowContacts(message.Item2);
+                        }));
+                        break;
+                    default:
+                        if (currentChatID == message.Item1)
+                        {
+                            Invoke(new Action(() =>
+                            {
+                                receiveBubble(message.Item2);
+                            }));
+                        }
+                        break;
                 }
             }
         }

@@ -46,6 +46,7 @@ namespace AnotherClient
             this.chatIdLabel = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.contactsView = new System.Windows.Forms.Panel();
             this.chatView.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -210,11 +211,20 @@ namespace AnotherClient
             this.panel3.Size = new System.Drawing.Size(2, 275);
             this.panel3.TabIndex = 15;
             // 
+            // contactsView
+            // 
+            this.contactsView.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.contactsView.Location = new System.Drawing.Point(0, 105);
+            this.contactsView.Name = "contactsView";
+            this.contactsView.Size = new System.Drawing.Size(177, 274);
+            this.contactsView.TabIndex = 16;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
+            this.Controls.Add(this.contactsView);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.disconnectButton);
             this.Controls.Add(this.connectButton);
@@ -262,6 +272,7 @@ namespace AnotherClient
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Panel contactsView;
     }
 }
 

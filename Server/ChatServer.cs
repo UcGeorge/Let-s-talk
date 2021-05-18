@@ -5,6 +5,8 @@ using System.IO;
 using System.Collections;
 using System.Text;
 using System.Threading;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Server
 {
@@ -12,7 +14,7 @@ namespace Server
     {
         private IPAddress iP;
         private int port;
-        public static Hashtable clientsList = new Hashtable();
+        public static Dictionary<string, TcpClient> clientsList = new Dictionary<string, TcpClient>();
         TcpClient clientSocket;
 
         public ChatServer(IPAddress iPAddress, int port)
@@ -29,6 +31,9 @@ namespace Server
             tcpListener.Start();
             Console.WriteLine("Server Started");
 
+            clientsList.Add("Admin", null);
+            clientsList.Add("Broadcast", null);
+
             while(true)
             {
                 try
@@ -36,7 +41,7 @@ namespace Server
                     //Accepts a new connection...
                     clientSocket = tcpListener.AcceptTcpClient();
                     Console.WriteLine("Someone is trying to connect...");
-                    handleClinet handleClinet = new handleClinet(clientSocket, clientsList);
+                    handleClinet handleClinet = new handleClinet(clientSocket);
                 }
                 catch (Exception e)
                 {
@@ -49,12 +54,10 @@ namespace Server
     public class handleClinet
     {
         string clName;
-        Hashtable clientsList;
         TcpClient clientSocket;
 
-        public handleClinet(TcpClient clientSocket, Hashtable cList)
+        public handleClinet(TcpClient clientSocket)
         {
-            this.clientsList = cList;
             this.clientSocket = clientSocket;
             Thread clientThread = new Thread(startClient);
             clientThread.Start();
@@ -69,8 +72,9 @@ namespace Server
                 clName = streamReader.ReadLine().Split("~")[1];
                 string message = "Admin~Welcome, " + clName + "!";
                 Console.WriteLine(clName + " just joined.");
-                clientsList.Add(clName, clientSocket);
+                ChatServer.clientsList.Add(clName, clientSocket);
                 broadcast(clName + " just joined.", "Admin");
+                sendContacts();
                 streamWriter.WriteLine(message);
                 streamWriter.Flush();
 
@@ -81,13 +85,15 @@ namespace Server
                     {
                         incomingMessage = streamReader.ReadLine();
                         Console.WriteLine("From client - " + clName + " : " + incomingMessage);
-                        if (incomingMessage.Split("~")[0] == "Admin")
+                        if (incomingMessage.Split("~")[0] == "Admin" || incomingMessage.Split("~")[0] == "Broadcast")
                         {
                             broadcast(incomingMessage.Split("~")[1], clName);
+                            sendContacts();
                         }
                         else
                         {
-                            sendTo((TcpClient)clientsList[incomingMessage.Split("~")[0]], incomingMessage.Split("~")[1]);
+                            sendTo(ChatServer.clientsList[incomingMessage.Split("~")[0]], incomingMessage.Split("~")[1]);
+                            sendContacts();
                         }
                     }//end while
                 }
@@ -100,25 +106,63 @@ namespace Server
 
         public void broadcast(string msg, string uName)
         {
-            foreach (DictionaryEntry Item in clientsList)
+            foreach (KeyValuePair<string, TcpClient> kvp in ChatServer.clientsList)
             {
-                NetworkStream networkStream = ((TcpClient)Item.Value).GetStream();
-                StreamWriter streamWriter = new StreamWriter(networkStream);
-                StreamReader streamReader = new StreamReader(networkStream);
-                string message = uName + "~" + msg;
-                streamWriter.WriteLine(message);
-                streamWriter.Flush();
+                if (kvp.Key == "Broadcast" || kvp.Key == "Admin")
+                {
+                    continue;
+                }
+                if (kvp.Value.Connected)
+                {
+                    NetworkStream networkStream = kvp.Value.GetStream();
+                    StreamWriter streamWriter = new StreamWriter(networkStream);
+                    StreamReader streamReader = new StreamReader(networkStream);
+                    string message = uName + "~" + msg;
+                    streamWriter.WriteLine(message);
+                    Console.WriteLine("To client - " + kvp.Key + " : " + message);
+                    streamWriter.Flush();
+                }
             }
         }  //end broadcast function
 
         public void sendTo(TcpClient receiver, string msg)
         {
-            NetworkStream networkStream = receiver.GetStream();
-            StreamWriter streamWriter = new StreamWriter(networkStream);
-            StreamReader streamReader = new StreamReader(networkStream);
+            if (receiver.Connected)
             {
-                string message = clName + "~" + msg;
+                NetworkStream networkStream = receiver.GetStream();
+                StreamWriter streamWriter = new StreamWriter(networkStream);
+                StreamReader streamReader = new StreamReader(networkStream);
+                {
+                    string message = clName + "~" + msg;
+                    streamWriter.WriteLine(message);
+                    Console.WriteLine("To client : " + message);
+                    streamWriter.Flush();
+                }
+            }
+        }
+
+        public void sendContacts()
+        {
+            string message_list = "";
+            foreach(KeyValuePair<string, TcpClient> i in ChatServer.clientsList)
+            {
+                if(i.Key == "Broadcast" || i.Key == "Admin" || i.Value.Connected)
+                {
+                    message_list += i.Key + "+";
+                }
+            }
+            foreach (KeyValuePair<string, TcpClient> Item in ChatServer.clientsList)
+            {
+                if (Item.Key == "Broadcast" || Item.Key == "Admin")
+                {
+                    continue;
+                }
+                NetworkStream networkStream = Item.Value.GetStream();
+                StreamWriter streamWriter = new StreamWriter(networkStream);
+                StreamReader streamReader = new StreamReader(networkStream);
+                string message = "Contacts~" + message_list.Trim('+');
                 streamWriter.WriteLine(message);
+                Console.WriteLine("To client - " + Item.Key + " : " + message);
                 streamWriter.Flush();
             }
         }
