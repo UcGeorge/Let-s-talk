@@ -39,7 +39,7 @@ namespace AnotherClient
             this.disconnectButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.chatView = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
+            this.chatsRegion = new System.Windows.Forms.Panel();
             this.chatSendButton = new System.Windows.Forms.Button();
             this.chatTextBox = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -133,7 +133,7 @@ namespace AnotherClient
             // 
             // chatView
             // 
-            this.chatView.Controls.Add(this.label4);
+            this.chatView.Controls.Add(this.chatsRegion);
             this.chatView.Controls.Add(this.chatSendButton);
             this.chatView.Controls.Add(this.chatTextBox);
             this.chatView.Controls.Add(this.panel2);
@@ -142,16 +142,14 @@ namespace AnotherClient
             this.chatView.Size = new System.Drawing.Size(498, 304);
             this.chatView.TabIndex = 13;
             // 
-            // label4
+            // chatsRegion
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Swis721 Ex BT", 18F, System.Drawing.FontStyle.Italic);
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label4.Location = new System.Drawing.Point(14, 125);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(470, 29);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "Select a contact to start messaging";
+            this.chatsRegion.AutoScroll = true;
+            this.chatsRegion.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.chatsRegion.Location = new System.Drawing.Point(1, 30);
+            this.chatsRegion.Name = "chatsRegion";
+            this.chatsRegion.Size = new System.Drawing.Size(495, 235);
+            this.chatsRegion.TabIndex = 14;
             // 
             // chatSendButton
             // 
@@ -190,9 +188,8 @@ namespace AnotherClient
             this.chatIdLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.chatIdLabel.Location = new System.Drawing.Point(2, 6);
             this.chatIdLabel.Name = "chatIdLabel";
-            this.chatIdLabel.Size = new System.Drawing.Size(79, 21);
+            this.chatIdLabel.Size = new System.Drawing.Size(0, 21);
             this.chatIdLabel.TabIndex = 0;
-            this.chatIdLabel.Text = "Jhonny";
             // 
             // panel1
             // 
@@ -213,6 +210,7 @@ namespace AnotherClient
             // 
             // contactsView
             // 
+            this.contactsView.AutoScroll = true;
             this.contactsView.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.contactsView.Location = new System.Drawing.Point(0, 105);
             this.contactsView.Name = "contactsView";
@@ -244,7 +242,6 @@ namespace AnotherClient
             this.Text = "Connected to";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.chatView.ResumeLayout(false);
-            this.chatView.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -271,8 +268,8 @@ namespace AnotherClient
         private System.Windows.Forms.Label chatIdLabel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Panel contactsView;
+        private System.Windows.Forms.Panel chatsRegion;
     }
 }
 

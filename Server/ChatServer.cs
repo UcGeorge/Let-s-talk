@@ -157,13 +157,16 @@ namespace Server
                 {
                     continue;
                 }
-                NetworkStream networkStream = Item.Value.GetStream();
-                StreamWriter streamWriter = new StreamWriter(networkStream);
-                StreamReader streamReader = new StreamReader(networkStream);
-                string message = "Contacts~" + message_list.Trim('+');
-                streamWriter.WriteLine(message);
-                Console.WriteLine("To client - " + Item.Key + " : " + message);
-                streamWriter.Flush();
+                if (Item.Value.Connected)
+                {
+                    NetworkStream networkStream = Item.Value.GetStream();
+                    StreamWriter streamWriter = new StreamWriter(networkStream);
+                    StreamReader streamReader = new StreamReader(networkStream);
+                    string message = "Contacts~" + message_list.Trim('+');
+                    streamWriter.WriteLine(message);
+                    Console.WriteLine("To client - " + Item.Key + " : " + message);
+                    streamWriter.Flush();
+                }
             }
         }
     } //end class handleClinet

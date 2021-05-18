@@ -22,8 +22,8 @@ namespace AnotherClient
         private string currentChatID;
         private ChatClient client;
         private string clientName;
-        private Panel[] chats = new Panel[5];
-        int oldestChat = 0;
+        private Dictionary<string, List<Message>> chatsByContact = new Dictionary<string, List<Message>>();
+
 
         public Form1(string clientName)
         {
@@ -38,6 +38,10 @@ namespace AnotherClient
             int y = 0;
             foreach (string coontact in contacts.Split('+'))
             {
+                if (!chatsByContact.Keys.Contains(coontact))
+                {
+                    chatsByContact.Add(coontact, new List<Message>());
+                }
                 if(coontact == clientName)
                 {
                     continue;
@@ -57,10 +61,13 @@ namespace AnotherClient
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.Text = clientName;
             hostBox.Enabled = true;
             connectButton.Enabled = true;
             portBox.Text = port_Number.ToString();
             portBox.Enabled = false;
+            chatTextBox.Visible = false;
+            chatSendButton.Visible = false;
             hostBox.Text = "localhost";
             hostBox.Focus();
             severMsgBox.Text = "Enter host address";
@@ -85,7 +92,7 @@ namespace AnotherClient
                 if (myclient.Connected)
                 {
                     client = new ChatClient(myclient);
-                    HandleConnection();
+                    InitializeConnection();
                     hostBox.Enabled = false;
                     connectButton.Enabled = false;
                     disconnectButton.Visible = true;
@@ -135,21 +142,19 @@ namespace AnotherClient
                 prevButton = currentButton;
             }
             currentChatID = currentButton.Text;
-            label4.Visible = false;
             chatIdLabel.Text = currentChatID;
             chatIdLabel.Visible = true;
             chatTextBox.Visible = true;
             chatTextBox.Focus();
             chatSendButton.Visible = true;
+            BuildChatBubbles(currentChatID);
         }
 
-        private void HandleConnection()
+        private void InitializeConnection()
         {
             client.sendMessage(clientName, "Admin");
             currentChatID = "Admin";
-            label4.Visible = false;
             chatIdLabel.Text = currentChatID;
-            chatIdLabel.Visible = true;
             chatTextBox.Visible = true;
             chatSendButton.Visible = true;
             chatTextBox.Focus();
@@ -157,98 +162,104 @@ namespace AnotherClient
             listener.Start();
         }
 
-        private void receiveBubble(string text)
+        private void BuildChatBubbles(string chatID)
         {
-            foreach (Panel chat in chats)
+            chatsRegion.Controls.Clear();
+            int y = 7;
+            foreach (Message message in chatsByContact[chatID])
             {
-                if (chat == null)
+                Panel bubble = new Panel();
+                chatsRegion.Controls.Add(bubble);
+                Label chatText = new Label();
+                bubble.Controls.Add(chatText);
+
+                if(message.messageType == MessageType.Incoming)
                 {
-                    continue;
+                    chatText.AutoSize = true;
+                    chatText.Font = new Font("Tahoma", 12F, FontStyle.Regular, GraphicsUnit.Point);
+                    chatText.ForeColor = SystemColors.HighlightText;
+                    chatText.Location = new Point(7, 7);
+                    chatText.Name = "chatText";
+                    chatText.Text = message.message;
+
+                    bubble.BackColor = Color.Teal;
+                    bubble.Name = "panel " + message.message;
+                    bubble.Size = new Size(chatText.Size.Width + 13, 36);
+                    bubble.Location = new Point(7, y);
+                    y += 42;
                 }
-                chat.Location = new Point(chat.Location.X, chat.Location.Y - 42); ;
-            }
-            Panel bubble = new Panel();
-            chatView.Controls.Add(bubble);
-            Label chatText = new Label();
-            bubble.Controls.Add(chatText);
+                else
+                {
+                    chatText.AutoSize = true;
+                    chatText.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+                    chatText.ForeColor = System.Drawing.SystemColors.ControlText;
+                    chatText.Location = new System.Drawing.Point(7, 7);
+                    chatText.Name = "chatText";
+                    chatText.Text = message.message;
 
-            chatText.AutoSize = true;
-            chatText.Font = new Font("Tahoma", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            chatText.ForeColor = SystemColors.HighlightText;
-            chatText.Location = new Point(7, 7);
-            chatText.Name = "chatText";
-            chatText.Text = text;
-
-            bubble.BackColor = Color.Teal;
-            bubble.Location = new Point(7, 222);
-            bubble.Name = "panel " + text;
-            bubble.Size = new Size(chatText.Size.Width + 13, 36);
-            if (chats.Length == 5)
-            {
-                chatView.Controls.Remove(chats[0]);
-                oldestChat++;
+                    bubble.BackColor = System.Drawing.Color.LightCyan;
+                    bubble.Name = "panel " + message.message;
+                    bubble.Size = new System.Drawing.Size(chatText.Size.Width + 13, 36);
+                    bubble.Location = new System.Drawing.Point(chatView.Size.Width - chatText.Size.Width - 13 - 27, y);
+                    y += 42;
+                }
+                if(chatsByContact[chatID].Last() == message)
+                {
+                    bubble.Focus();
+                }
             }
-            chats.Append(bubble);
         }
 
         private void listenForMessages()
         {
             while (true)
             {
-                (string, string) message = client.receiveMessage();
-                switch (message.Item1)
+                try
                 {
-                    case "Contacts":
-                        Invoke(new Action(() =>
-                        {
-                            ShowContacts(message.Item2);
-                        }));
-                        break;
-                    default:
-                        if (currentChatID == message.Item1)
-                        {
+                    (string, string) message = client.receiveMessage();
+                    switch (message.Item1)
+                    {
+                        case "Contacts":
                             Invoke(new Action(() =>
                             {
-                                receiveBubble(message.Item2);
+                                ShowContacts(message.Item2);
                             }));
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void sendeBubble(string text)
-        {
-            Panel bubble = new Panel();
-            chatView.Controls.Add(bubble);
-            Label chatText = new Label();
-            bubble.Controls.Add(chatText);
-
-            chatText.AutoSize = true;
-            chatText.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chatText.ForeColor = System.Drawing.SystemColors.ControlText;
-            chatText.Location = new System.Drawing.Point(7, 7);
-            chatText.Name = "chatText";
-            chatText.Text = text;
-
-            foreach (Panel chat in chats)
-            {
-                if (chat == null)
+                            break;
+                        default:
+                            if (currentChatID == message.Item1)
+                            {
+                                Invoke(new Action(() =>
+                                {
+                                    if (!chatsByContact.Keys.Contains(message.Item1))
+                                    {
+                                        chatsByContact.Add(message.Item1, new List<Message>());
+                                    }
+                                    chatsByContact[message.Item1].Add(new Message(MessageType.Incoming, message.Item2));
+                                    BuildChatBubbles(message.Item1);
+                                }));
+                            }
+                            else
+                            {
+                                Invoke(new Action(() =>
+                                {
+                                    if (!chatsByContact.Keys.Contains(message.Item1))
+                                    {
+                                        chatsByContact.Add(message.Item1, new List<Message>());
+                                    }
+                                    chatsByContact[message.Item1].Add(new Message(MessageType.Incoming, message.Item2));
+                                }));
+                            }
+                            break;
+                    }
+                }catch(Exception e)
                 {
-                    continue;
+                    Invoke(new Action(() =>
+                    {
+                        severMsgBox.Text = "An error occoured. Check the console for more info.";
+                    }));
+                    Console.WriteLine(e.ToString());
                 }
-                chat.Location = new System.Drawing.Point(chat.Location.X, chat.Location.Y - 42);
             }
-            bubble.BackColor = System.Drawing.Color.LightCyan;
-            bubble.Location = new System.Drawing.Point(chatView.Size.Width - chatText.Size.Width - 13 - 7, 222);
-            bubble.Name = "panel " + text;
-            bubble.Size = new System.Drawing.Size(chatText.Size.Width + 13, 36);
-            if (chats.Length == 5)
-            {
-                chatView.Controls.Remove(chats[0]);
-                oldestChat++;
-            }
-            chats.Append(bubble);
         }
 
         private void chatSendButton_Click(object sender, EventArgs e)
@@ -261,12 +272,31 @@ namespace AnotherClient
             }
             if (client.sendMessage(chatTextBox.Text, currentChatID))
             {
-                sendeBubble(chatTextBox.Text);
+                chatsByContact[currentChatID].Add(new Message(MessageType.Outgoing, chatTextBox.Text));
+                BuildChatBubbles(currentChatID);
             }
             else
             {
                 severMsgBox.Text = "There was an error sending messages";
             }
         }
+    }
+
+    class Message
+    {
+        public readonly MessageType messageType;
+        public readonly string message;
+
+        public Message(MessageType messageType, string message)
+        {
+            this.messageType = messageType;
+            this.message = message;
+        }
+    }
+
+    enum MessageType
+    {
+        Outgoing,
+        Incoming
     }
 }
