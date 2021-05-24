@@ -8,7 +8,7 @@ namespace Server
         [Obsolete]
         static void Main(string[] args)
         {
-            ChatServer chatServer = new ChatServer(IPAddress.Loopback, 1234);
+            ChatServer chatServer = new ChatServer(IPAddress.Any, 1234);
             chatServer.Start();
         }
     }
