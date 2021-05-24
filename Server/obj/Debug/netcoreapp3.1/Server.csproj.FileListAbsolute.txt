@@ -11,3 +11,6 @@ C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\netcoreapp3.1\Server.dll
 C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\netcoreapp3.1\Server.pdb
 C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\netcoreapp3.1\Server.genruntimeconfig.cache
 C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\netcoreapp3.1\Server.csprojAssemblyReference.cache
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\netcoreapp3.1\Shared.dll
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\netcoreapp3.1\Shared.pdb
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\netcoreapp3.1\Server.csproj.CopyComplete

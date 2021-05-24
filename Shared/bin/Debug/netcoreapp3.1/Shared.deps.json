@@ -6,14 +6,6 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Server/1.0.0": {
-        "dependencies": {
-          "Shared": "1.0.0"
-        },
-        "runtime": {
-          "Server.dll": {}
-        }
-      },
       "Shared/1.0.0": {
         "runtime": {
           "Shared.dll": {}
@@ -22,11 +14,6 @@
     }
   },
   "libraries": {
-    "Server/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "Shared/1.0.0": {
       "type": "project",
       "serviceable": false,

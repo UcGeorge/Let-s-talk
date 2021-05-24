@@ -39,6 +39,7 @@ namespace AnotherClient
             this.disconnectButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.chatView = new System.Windows.Forms.Panel();
+            this.fileButton = new System.Windows.Forms.Button();
             this.chatsRegion = new System.Windows.Forms.Panel();
             this.chatSendButton = new System.Windows.Forms.Button();
             this.chatTextBox = new System.Windows.Forms.RichTextBox();
@@ -47,6 +48,8 @@ namespace AnotherClient
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.contactsView = new System.Windows.Forms.Panel();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.chatView.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -133,6 +136,7 @@ namespace AnotherClient
             // 
             // chatView
             // 
+            this.chatView.Controls.Add(this.fileButton);
             this.chatView.Controls.Add(this.chatsRegion);
             this.chatView.Controls.Add(this.chatSendButton);
             this.chatView.Controls.Add(this.chatTextBox);
@@ -141,6 +145,17 @@ namespace AnotherClient
             this.chatView.Name = "chatView";
             this.chatView.Size = new System.Drawing.Size(498, 304);
             this.chatView.TabIndex = 13;
+            // 
+            // fileButton
+            // 
+            this.fileButton.Font = new System.Drawing.Font("Stylus BT", 14.25F);
+            this.fileButton.Location = new System.Drawing.Point(365, 264);
+            this.fileButton.Name = "fileButton";
+            this.fileButton.Size = new System.Drawing.Size(57, 40);
+            this.fileButton.TabIndex = 15;
+            this.fileButton.Text = "file";
+            this.fileButton.UseVisualStyleBackColor = true;
+            this.fileButton.Click += new System.EventHandler(this.fileButton_Click);
             // 
             // chatsRegion
             // 
@@ -168,7 +183,7 @@ namespace AnotherClient
             this.chatTextBox.Font = new System.Drawing.Font("Swis721 Ex BT", 11.25F);
             this.chatTextBox.Location = new System.Drawing.Point(-1, 264);
             this.chatTextBox.Name = "chatTextBox";
-            this.chatTextBox.Size = new System.Drawing.Size(422, 40);
+            this.chatTextBox.Size = new System.Drawing.Size(368, 40);
             this.chatTextBox.TabIndex = 12;
             this.chatTextBox.Text = "Write a message...";
             // 
@@ -217,6 +232,10 @@ namespace AnotherClient
             this.contactsView.Size = new System.Drawing.Size(177, 274);
             this.contactsView.TabIndex = 16;
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -240,6 +259,7 @@ namespace AnotherClient
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connected to";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.chatView.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -270,6 +290,9 @@ namespace AnotherClient
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel contactsView;
         private System.Windows.Forms.Panel chatsRegion;
+        private System.Windows.Forms.Button fileButton;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 

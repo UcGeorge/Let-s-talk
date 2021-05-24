@@ -9,6 +9,7 @@ namespace AnotherClient
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Console.Write("Enter your name: ");
