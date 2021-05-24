@@ -185,7 +185,7 @@ namespace AnotherClient
             this.chatTextBox.Name = "chatTextBox";
             this.chatTextBox.Size = new System.Drawing.Size(368, 40);
             this.chatTextBox.TabIndex = 12;
-            this.chatTextBox.Text = "Write a message...";
+            this.chatTextBox.Text = "";
             // 
             // panel2
             // 

@@ -87,11 +87,11 @@ namespace AnotherClient
             }
         }
     
-        public byte[] receiveFile(string fileName, string sender)
+        public byte[] receiveFile(string fileName, string sender, string server)
         {
             byte[] data = new byte[0];
 
-            using (TcpClient file_client = new TcpClient("localhost", 4321))
+            using (TcpClient file_client = new TcpClient(server, 4321))
             using (NetworkStream stream = file_client.GetStream())
             using (StreamWriter streamWriter = new StreamWriter(stream))
             using (StreamReader streamReader = new StreamReader(stream))

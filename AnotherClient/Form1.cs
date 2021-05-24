@@ -396,6 +396,8 @@ namespace AnotherClient
             {
                 chatsByContact[currentChatID].Add(new Message(MessageType.Outgoing, chatTextBox.Text));
                 BuildChatBubbles(currentChatID);
+                chatTextBox.Text = "";
+                chatTextBox.Focus();
             }
             else
             {
@@ -469,7 +471,7 @@ namespace AnotherClient
             Thread t = new Thread(() =>
             {
                 fileName = (saveButton).Name;
-                receivedFile = client.receiveFile(fileName, clientName);
+                receivedFile = client.receiveFile(fileName, clientName, hostBox.Text);
                 Console.WriteLine(String.Format("Received File: {0}\nSize: {1} bytes", fileName.Split('\\').Last(), receivedFile.Length));
             });
             t.Start();

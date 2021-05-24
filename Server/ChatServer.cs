@@ -66,7 +66,7 @@ namespace Server
         public void fileServer()
         {
             //TcpListener is listening on the given port...
-            TcpListener tcpListener = new TcpListener(IPAddress.Loopback, 4321);
+            TcpListener tcpListener = new TcpListener(IPAddress.Any, 4321);
             tcpListener.Start();
 
             while (true)
