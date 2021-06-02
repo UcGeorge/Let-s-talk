@@ -375,10 +375,17 @@ namespace AnotherClient
                 }
                 catch (Exception e)
                 {
-                    Invoke(new Action(() =>
+                    try
                     {
-                        severMsgBox.Text = "An error occoured. Check the console for more info.";
-                    }));
+                        Invoke(new Action(() =>
+                        {
+                            severMsgBox.Text = "An error occoured. Check the console for more info.";
+                        }));
+                    }
+                    catch(Exception f)
+                    {
+                        return;
+                    }
                     Console.WriteLine(e.ToString());
                 }
             }

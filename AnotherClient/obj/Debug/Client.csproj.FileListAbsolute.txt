@@ -6,4 +6,4 @@ C:\Users\USER\source\repos\Let's talk\AnotherClient\obj\Debug\Client.csproj.Gene
 C:\Users\USER\source\repos\Let's talk\AnotherClient\obj\Debug\Client.csproj.CoreCompileInputs.cache
 C:\Users\USER\source\repos\Let's talk\AnotherClient\obj\Debug\AnotherClient.exe
 C:\Users\USER\source\repos\Let's talk\AnotherClient\obj\Debug\AnotherClient.pdb
-C:\Users\USER\source\repos\Let's talk\AnotherClient\obj\Debug\Client.csprojAssemblyReference.cache
+C:\Users\USER\source\repos\Let's talk\AnotherClient\obj\Debug\Client.csproj.AssemblyReference.cache

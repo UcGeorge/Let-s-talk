@@ -1,0 +1,14 @@
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\Server.exe.config
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\Server.exe
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\Server.pdb
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\EntityFramework.dll
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\EntityFramework.xml
+C:\Users\USER\source\repos\Let's talk\Server\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.csproj.CopyComplete
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.exe
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.pdb
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.Migrations.ModifiedDomainClasses.resources
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.csproj.GenerateResource.cache
+C:\Users\USER\source\repos\Let's talk\Server\obj\Debug\Server.csproj.AssemblyReference.cache

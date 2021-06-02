@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
-using Shared;
 
 namespace Server
 {
@@ -15,9 +14,7 @@ namespace Server
     {
         private IPAddress iP;
         private int port;
-        public static Dictionary<string, TcpClient> clientsList = new Dictionary<string, TcpClient>();
-        public static Dictionary<string, Dictionary<string, ChatFile>> fileList = new Dictionary<string, Dictionary<string, ChatFile>>();
-        TcpClient clientSocket;
+        protected List<chat_client> onlineClients = new List<chat_client>();
 
         public ChatServer(IPAddress iPAddress, int port)
         {
@@ -32,29 +29,55 @@ namespace Server
             tcpListener.Start();
             Console.WriteLine("Server Started");
 
-            clientsList.Add("Admin", null);
-            clientsList.Add("Broadcast", null);
+            onlineClients.Add(chat_client.GetClient("Admin"));
+            onlineClients.Add(chat_client.GetClient("Broadcast"));
 
-            Thread fileServerThread = new Thread(fileServer);
-            fileServerThread.Start();
+            new Thread(fileServer).Start(); // Start file server
 
             new Thread(() =>
             {
-                while(true)
+                while (true)
                 {
-                    sendContacts();
-                    Thread.Sleep(500);
+                    bool modified = false;
+                    lock (onlineClients)
+                    {
+                        try
+                        {
+                            foreach (chat_client client in onlineClients)
+                            {
+                                if (client.Id != "Broadcast" && client.Id != "Admin" && !client.client.Connected)
+                                {
+                                    onlineClients.Remove(client);
+                                    modified = true;
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Error while scanning connected clients\n{e.ToString()}");
+                        }
+                    }
+                    if (modified)
+                    {
+                        sendContacts();
+                        modified = false;
+                    }
+
+                    Thread.Sleep(10000);
                 }
-            }).Start();
+            }).Start(); // Thread to check for connected and disconnected clients
 
             while (true)
             {
                 try
                 {
                     //Accepts a new connection...
-                    clientSocket = tcpListener.AcceptTcpClient();
+                    TcpClient clientSocket = tcpListener.AcceptTcpClient();
                     Console.WriteLine("Someone is trying to connect...");
-                    handleClinet handleClinet = new handleClinet(clientSocket);
+                    new Thread(() =>
+                    {
+                        HandleClient(clientSocket);
+                    }).Start();
                 }
                 catch (Exception e)
                 {
@@ -63,7 +86,78 @@ namespace Server
             }
         }
 
-        public void fileServer()
+        void broadcast(string msg, string uName)
+        {
+            foreach (chat_client client in onlineClients)
+            {
+                if (client.Id != "Broadcast" && client.Id != "Admin" && client.client.Connected)
+                {
+                    NetworkStream networkStream = client.client.GetStream();
+                    StreamWriter streamWriter = new StreamWriter(networkStream);
+                    string message = uName + "~[BROADCAST] " + msg;
+                    streamWriter.WriteLine(message);
+                    Console.WriteLine("To client - " + client.Id + " : " + message);
+                    streamWriter.Flush();
+                }
+            }
+        }
+
+        void SendTo(string receiver, string msg, string clName, chat_file filee = null)
+        {
+            chat_client receiverClient = onlineClients.Where(x => x.Id == receiver).FirstOrDefault();
+
+            if (receiverClient.client.Connected)
+            {
+                NetworkStream networkStream = receiverClient.client.GetStream();
+                StreamWriter streamWriter = new StreamWriter(networkStream);
+                {
+                    if (filee != null)
+                    {
+                        string message = "File~";
+                        message += (filee.sender + "|" + filee.Id + "|" + filee.size);
+                        streamWriter.WriteLine(message);
+                        Console.WriteLine("To client : " + message);
+                        streamWriter.Flush();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"To be sent: {msg}.\nBy: {clName}\nTo: {receiver}");
+                        string message = clName + '~' + msg;
+                        streamWriter.WriteLine(message);
+                        streamWriter.Flush();
+                    }
+                }
+            }
+        }
+
+        byte[] receiveFile(NetworkStream stream, TcpClient clientSocket)
+        {
+            byte[] fileSizeBytes = new byte[4];
+            int bytes = stream.Read(fileSizeBytes, 0, 4);
+            int dataLength = BitConverter.ToInt32(fileSizeBytes, 0);
+
+            int bytesLeft = dataLength;
+            byte[] data = new byte[dataLength];
+
+            int bufferSize = 1024;
+            int bytesRead = 0;
+
+            while (bytesLeft > 0)
+            {
+                int curDataSize = Math.Min(bufferSize, bytesLeft);
+                if (clientSocket.Available < curDataSize)
+                    curDataSize = clientSocket.Available;
+
+                bytes = stream.Read(data, bytesRead, curDataSize);
+
+                bytesRead += curDataSize;
+                bytesLeft -= curDataSize;
+            }
+
+            return data;
+        }
+
+        void fileServer()
         {
             //TcpListener is listening on the given port...
             TcpListener tcpListener = new TcpListener(IPAddress.Any, 4321);
@@ -76,17 +170,21 @@ namespace Server
                     //Accepts a new connection...
                     TcpClient fileClientSocket = tcpListener.AcceptTcpClient();
 
-                    new Thread(() => {
+                    new Thread(() =>
+                    {
                         using (NetworkStream networkStream = fileClientSocket.GetStream())
                         using (StreamWriter streamWriter = new StreamWriter(networkStream))
                         using (StreamReader streamReader = new StreamReader(networkStream))
                         {
                             string initMessage = streamReader.ReadLine();
-                            Console.WriteLine(String.Format("Client {0} is trying to get file: {1}", initMessage.Split("~")[0], initMessage.Split("~")[1]));
+                            Console.WriteLine(String.Format("Client {0} is trying to get file: {1}", initMessage.Split('~')[0], initMessage.Split('~')[1]));
 
                             int bufferSize = 1024;
 
-                            byte[] file = ChatServer.fileList[initMessage.Split("~")[0]][initMessage.Split("~")[1]].GetFile.Item2;
+                            var fileName = initMessage.Split('~')[1].Split('\\').Last();
+                            var theFile = chat_file.GetFile(fileName);
+
+                            byte[] file = File.ReadAllBytes(theFile.location);
 
                             byte[] dataLength = BitConverter.GetBytes(file.Length);
 
@@ -114,60 +212,41 @@ namespace Server
             }
         }
 
-        public void sendContacts()
+        void sendContacts()
         {
             string message_list = "";
-            foreach (KeyValuePair<string, TcpClient> i in clientsList)
+            foreach (chat_client client in onlineClients)
             {
-                if (i.Key == "Broadcast" || i.Key == "Admin" || i.Key == "Files" || i.Value.Connected)
+                if (client.Id == "Broadcast" || client.Id == "Admin" || client.client.Connected)
                 {
-                    message_list += i.Key + "+";
+                    message_list += client.Id + "+";
                 }
             }
-            foreach (KeyValuePair<string, TcpClient> Item in clientsList)
+            foreach (chat_client client in onlineClients)
             {
-                if (Item.Key == "Broadcast" || Item.Key == "Admin" || Item.Key == "Files")
+                if (client.Id != "Broadcast" && client.Id != "Admin" && client.client.Connected)
                 {
-                    continue;
-                }
-                if (Item.Value.Connected)
-                {
-                    NetworkStream networkStream = Item.Value.GetStream();
-                    StreamWriter streamWriter = new StreamWriter(networkStream);
-                    StreamReader streamReader = new StreamReader(networkStream);
-                    string message = "Contacts~" + message_list.Trim('+');
-                    streamWriter.WriteLine(message);
-                    Console.WriteLine("To client - " + Item.Key + " : " + message);
-                    streamWriter.Flush();
+                    SendTo(client.Id, message_list.Trim('+'), "Contacts");
                 }
             }
         }
-    }
 
-    public class handleClinet
-    {
-        string clName;
-        TcpClient clientSocket;
-
-        public handleClinet(TcpClient clientSocket)
-        {
-            this.clientSocket = clientSocket;
-            Thread clientThread = new Thread(startClient);
-            clientThread.Start();
-        }
-
-        public void startClient()
+        void HandleClient(TcpClient clientSocket)
         {
             using (NetworkStream networkStream = clientSocket.GetStream())
             using (StreamWriter streamWriter = new StreamWriter(networkStream))
             using (StreamReader streamReader = new StreamReader(networkStream))
             {
-                clName = streamReader.ReadLine().Split("~")[1];
-                string message = "Admin~Welcome, " + clName + "!";
-                Console.WriteLine(clName + " just joined.");
-                ChatServer.clientsList.Add(clName, clientSocket);
-                ChatServer.fileList.Add(clName, new Dictionary<string, ChatFile>());
-                broadcast(clName + " just joined.", "Admin");
+                var name = streamReader.ReadLine().Split('~')[1]; // Get first message (username~password)
+
+                string message = "Admin~Welcome, " + name + "!";
+                Console.WriteLine(name + " just joined.");
+
+                chat_client newClient = chat_client.GetClient(name, clientSocket);
+                string clName = newClient.Id;
+                onlineClients.Add(newClient); // Add new client to connected clients
+                sendContacts(); // Send contacts to everybody
+
                 streamWriter.WriteLine(message);
                 streamWriter.Flush();
 
@@ -177,23 +256,34 @@ namespace Server
                     while ((true))
                     {
                         incomingMessage = streamReader.ReadLine();
-                        Console.WriteLine("From client - " + clName + " : " + incomingMessage);
-                        string header = incomingMessage.Split("~")[0];
+                        Console.WriteLine("From client - " + newClient.Id + " : " + incomingMessage);
+                        string header = incomingMessage.Split('~')[0];
 
                         if (header == "Admin" || header == "Broadcast")
                         {
-                            broadcast(incomingMessage.Split("~")[1], clName);
+                            broadcast(incomingMessage.Split('~')[1], newClient.Id);
                         }
                         else if (header == "File")
                         {
-                            string receiver = incomingMessage.Split("~")[1];
-                            string fileName = incomingMessage.Split("~")[2];
+                            string receiver = incomingMessage.Split('~')[1];
+                            string fileName = incomingMessage.Split('~')[2];
                             try
                             {
-                                byte[] file = receiveFile(networkStream);
-                                ChatFile c = new ChatFile(fileName, file, clName);
-                                ChatServer.fileList[receiver].Add(fileName, c);
-                                sendTo(receiver, "", true, c);
+                                byte[] file = receiveFile(networkStream, clientSocket);
+                                var fileLocation = $@"C:\Users\USER\OneDrive\Documents\LTFiles\{fileName.Split('\\').Last()}";
+                                File.WriteAllBytes(fileLocation, file);
+                                chat_file c = chat_file.GetFile(
+                                    fileName, 
+                                    fileLocation, 
+                                    chat_client.GetClient(receiver), 
+                                    newClient,
+                                    file.Length);
+                                using(var context = new Model1())
+                                {
+                                    context.chat_file.Add(c);
+                                    context.SaveChanges();
+                                }
+                                SendTo(receiver, "", newClient.Id, c);
                             }
                             catch (Exception e)
                             {
@@ -209,7 +299,7 @@ namespace Server
                         }
                         else
                         {
-                            sendTo(header, incomingMessage.Split("~")[1], false);
+                            SendTo(header, incomingMessage.Split('~')[1], clName);
                         }
                     }//end while
                 }
@@ -219,81 +309,5 @@ namespace Server
                 }
             }
         }
-
-        byte[] receiveFile(NetworkStream stream)
-        {
-            byte[] fileSizeBytes = new byte[4];
-            int bytes = stream.Read(fileSizeBytes, 0, 4);
-            int dataLength = BitConverter.ToInt32(fileSizeBytes, 0);
-
-            int bytesLeft = dataLength;
-            byte[] data = new byte[dataLength];
-
-            int bufferSize = 1024;
-            int bytesRead = 0;
-
-            while (bytesLeft > 0)
-            {
-                int curDataSize = Math.Min(bufferSize, bytesLeft);
-                if (clientSocket.Available < curDataSize)
-                    curDataSize = clientSocket.Available;
-
-                bytes = stream.Read(data, bytesRead, curDataSize);
-
-                bytesRead += curDataSize;
-                bytesLeft -= curDataSize;
-            }
-
-            return data;
-        }
-
-        public void broadcast(string msg, string uName)
-        {
-            foreach (KeyValuePair<string, TcpClient> kvp in ChatServer.clientsList)
-            {
-                if (kvp.Key == "Broadcast" || kvp.Key == "Admin" || kvp.Key == "Files")
-                {
-                    continue;
-                }
-                if (kvp.Value.Connected)
-                {
-                    NetworkStream networkStream = kvp.Value.GetStream();
-                    StreamWriter streamWriter = new StreamWriter(networkStream);
-                    StreamReader streamReader = new StreamReader(networkStream);
-                    string message = uName + "~[BROADCAST] " + msg;
-                    streamWriter.WriteLine(message);
-                    Console.WriteLine("To client - " + kvp.Key + " : " + message);
-                    streamWriter.Flush();
-                }
-            }
-        }  //end broadcast function
-
-        public void sendTo(string receiver, string msg, bool file, ChatFile filee = null)
-        {
-            if (ChatServer.clientsList[receiver].Connected)
-            {
-                NetworkStream networkStream = ChatServer.clientsList[receiver].GetStream();
-                StreamWriter streamWriter = new StreamWriter(networkStream);
-                StreamReader streamReader = new StreamReader(networkStream);
-                {
-                    if (file)
-                    {
-                        string message = "File~";
-                        message += (filee.Sender + "|" + filee.GetFile.Item1 + "|" + filee.GetFile.Item2.Length);
-                        streamWriter.WriteLine(message);
-                        Console.WriteLine("To client : " + message);
-                        streamWriter.Flush();
-                    }
-                    else
-                    {
-                        string message = clName + "~" + msg;
-                        streamWriter.WriteLine(message);
-                        Console.WriteLine("To client : " + message);
-                        streamWriter.Flush();
-                    }
-                }
-            }
-        }
-
-    } //end class handleClinet
+    }
 }
