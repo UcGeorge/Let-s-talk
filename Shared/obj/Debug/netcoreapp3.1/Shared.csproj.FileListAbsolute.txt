@@ -6,3 +6,5 @@ C:\Users\USER\source\repos\Let's talk\Shared\obj\Debug\netcoreapp3.1\Shared.Asse
 C:\Users\USER\source\repos\Let's talk\Shared\obj\Debug\netcoreapp3.1\Shared.csproj.CoreCompileInputs.cache
 C:\Users\USER\source\repos\Let's talk\Shared\obj\Debug\netcoreapp3.1\Shared.dll
 C:\Users\USER\source\repos\Let's talk\Shared\obj\Debug\netcoreapp3.1\Shared.pdb
+C:\Users\USER\source\repos\Let's talk\Shared\obj\Debug\netcoreapp3.1\Shared.csproj.AssemblyReference.cache
+C:\Users\USER\source\repos\Let's talk\Shared\obj\Debug\netcoreapp3.1\Shared.GeneratedMSBuildEditorConfig.editorconfig
